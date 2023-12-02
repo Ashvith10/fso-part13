@@ -28,7 +28,7 @@
 
         if [ ! -d $PGDATA ]
         then
-        initdb -U $USER -W
+        initdb -U postgres -W
         fi
 
         if ! pg_ctl status
