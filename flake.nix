@@ -10,12 +10,8 @@
     perSystem = { config, self', inputs', pkgs, system, ... }:
     {
       devShells.default = with pkgs; mkShell {
-        buildInputs = ([
-            nodejs
-            postgresql
-        ]) ++ ( with nodePackages; [
-            pnpm
-        ]);
+        buildInputs = ([ nodejs postgresql ])
+          ++ (with nodePackages; [ pnpm ]);
 
         shellHook = ''
         export PGHOST=$PWD/.postgres
@@ -28,15 +24,15 @@
 
         if [ ! -d $PGDATA ]
         then
-        initdb -U postgres -W
+        initdb -U postgres -A trust > /dev/null
         fi
 
-        if ! pg_ctl status
+        if ! pg_ctl status -s > /dev/null
         then
-        pg_ctl start -l $PGLOG -o "--unix_socket_directories='$PGHOST'"
+        pg_ctl start -l $PGLOG -o --unix_socket_directories='$PGHOST' > /dev/null
         fi
 
-        trap "pg_ctl stop" EXIT
+        trap "pg_ctl stop > /dev/null" EXIT
         '';
       }; 
     };
